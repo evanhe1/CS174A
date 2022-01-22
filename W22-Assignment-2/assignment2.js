@@ -118,70 +118,38 @@ class Cube_Outline extends Shape {
   constructor() {
     super("position", "color");
     this.arrays.position = Vector3.cast(
-      [-1, -1, -1],
-      [1, -1, -1],
+      // bottom face
       [-1, -1, 1],
       [1, -1, 1],
+      [1, -1, 1],
+      [1, -1, -1],
+      [1, -1, -1],
+      [-1, -1, -1],
+      [-1, -1, -1],
+      [-1, -1, 1],
+      // top face
+      [-1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, -1],
       [1, 1, -1],
       [-1, 1, -1],
-      [1, 1, 1],
-      [-1, 1, 1],
-      [-1, -1, -1],
-      [-1, -1, 1],
       [-1, 1, -1],
       [-1, 1, 1],
-      [1, -1, 1],
-      [1, -1, -1],
-      [1, 1, 1],
-      [1, 1, -1],
+      // connect them
       [-1, -1, 1],
-      [1, -1, 1],
       [-1, 1, 1],
+      [1, -1, 1],
       [1, 1, 1],
       [1, -1, -1],
-      [-1, -1, -1],
       [1, 1, -1],
+      [-1, -1, -1],
       [-1, 1, -1]
     );
-    // Arrange the vertices into a square shape in texture space too:
-    this.indices.push(
-      0,
-      1,
-      2,
-      1,
-      3,
-      2,
-      4,
-      5,
-      6,
-      5,
-      7,
-      6,
-      8,
-      9,
-      10,
-      9,
-      11,
-      10,
-      12,
-      13,
-      14,
-      13,
-      15,
-      14,
-      16,
-      17,
-      18,
-      17,
-      19,
-      18,
-      20,
-      21,
-      22,
-      21,
-      23,
-      22
-    );
+
+    this.arrays.color = Array(24).fill(hex_color("#ffffff"));
+
+    this.indices = false;
   }
   //  TODO (Requirement 5).
   // When a set of lines is used in graphics, you should think of the list entries as
@@ -192,6 +160,29 @@ class Cube_Outline extends Shape {
 class Cube_Single_Strip extends Shape {
   constructor() {
     super("position", "normal");
+    this.arrays.position = Vector3.cast(
+      [-1, -1, 1],
+      [1, -1, 1],
+      [1, -1, -1],
+      [-1, -1, -1],
+      [-1, 1, 1],
+      [1, 1, 1],
+      [1, 1, -1],
+      [-1, 1, -1]
+    );
+
+    this.arrays.normal = Vector3.cast(
+      [-1, -1, 1],
+      [1, -1, 1],
+      [1, -1, -1],
+      [-1, -1, -1],
+      [-1, 1, 1],
+      [1, 1, 1],
+      [1, 1, -1],
+      [-1, 1, -1]
+    );
+
+    this.indices.push(0, 1, 3, 2, 7, 6, 5, 2, 1, 5, 4, 7, 3, 4, 0, 1);
     // TODO (Requirement 6)
   }
 }
@@ -209,6 +200,7 @@ class Base_Scene extends Scene {
     this.shapes = {
       cube: new Cube(),
       outline: new Cube_Outline(),
+      strip: new Cube_Single_Strip(),
     };
 
     // *** Materials
@@ -253,6 +245,7 @@ export class Assignment2 extends Base_Scene {
     // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
     super();
     this.pause = false;
+    this.outline = false;
     this.colors = new Array(8);
     for (let i = 0; i < 8; i++) {
       this.colors[i] = color(Math.random(), Math.random(), Math.random(), 1);
@@ -279,6 +272,7 @@ export class Assignment2 extends Base_Scene {
     this.key_triggered_button("Change Colors", ["c"], this.set_colors);
     // Add a button for controlling the scene.
     this.key_triggered_button("Outline", ["o"], () => {
+      this.outline = !this.outline;
       // TODO:  Requirement 5b:  Set a flag here that will toggle your outline on and off
     });
     this.key_triggered_button("Sit still", ["m"], () => {
@@ -287,17 +281,35 @@ export class Assignment2 extends Base_Scene {
     });
   }
 
-  draw_box(context, program_state, model_transform, color, angle) {
+  draw_box(context, program_state, model_transform, color, angle, draw_strips) {
     // TODO:  Helper function for requirement 3 (see hint).
     //        This should make changes to the model_transform matrix, draw the next box, and return the newest model_transform.
     // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
-    this.shapes.cube.draw(
-      context,
-      program_state,
-      model_transform,
-      this.materials.plastic.override({ color })
-    );
 
+    if (this.outline) {
+      this.shapes.outline.draw(
+        context,
+        program_state,
+        model_transform,
+        this.white,
+        "LINES"
+      );
+    } else if (draw_strips)
+      this.shapes.strip.draw(
+        context,
+        program_state,
+        model_transform,
+        this.materials.plastic.override({ color }),
+        "TRIANGLE_STRIP"
+      );
+    else
+      this.shapes.cube.draw(
+        context,
+        program_state,
+        model_transform,
+        this.materials.plastic.override({ color })
+      );
+    /*
     model_transform = model_transform
       .times(Mat4.translation(0, 1, 0))
       .times(Mat4.rotation(-angle, 0, 0, 1))
@@ -308,6 +320,14 @@ export class Assignment2 extends Base_Scene {
           0
         )
       );
+    */
+
+    model_transform = model_transform
+      .times(Mat4.scale(1, 2 / 3, 1))
+      .times(Mat4.translation(1, 1.5, 0))
+      .times(Mat4.rotation(-angle, 0, 0, 1))
+      .times(Mat4.translation(-1, 1.5, 0))
+      .times(Mat4.scale(1, 1.5, 1));
 
     return model_transform;
   }
@@ -331,26 +351,28 @@ export class Assignment2 extends Base_Scene {
     const a =
       0.025 * Math.PI * Math.sin((2 * Math.PI * (t - 750)) / 3000) +
       0.025 * Math.PI;
-    /*
+
     const MAX_ANGLE = 0.05 * Math.PI;
     // Example for drawing a cube, you can remove this line if needed
-    for (let i = 0; i < 8; i++) {
+
+    model_transform = model_transform.times(Mat4.scale(1, 1.5, 1));
+    for (let i = 0; i < 4; i++) {
       model_transform = this.draw_box(
         context,
         program_state,
         model_transform,
-        this.colors[i],
-        this.pause ? MAX_ANGLE : a
+        this.colors[2 * i],
+        this.pause ? MAX_ANGLE : a,
+        true
       );
-    }
-*/
-    for (let i = 0; i < 8; i++) {
-      this.shapes.outline.draw(
+
+      model_transform = this.draw_box(
         context,
         program_state,
         model_transform,
-        this.white,
-        "LINES"
+        this.colors[2 * i + 1],
+        this.pause ? MAX_ANGLE : a,
+        false
       );
     }
 
