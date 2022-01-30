@@ -34,14 +34,14 @@ const {
 
 const Minimal_Webgl_Demo = defs.Minimal_Webgl_Demo;
 
-Object.assign(defs, { Transforms_Sandbox }, { Assignment2 }, { Axes_Viewer });
+Object.assign(defs, { Transforms_Sandbox }, { Assignment2 });
 
 // ******************** End extra step
 
 // (Can define Main_Scene's class here)
 
 const Main_Scene = Assignment2;
-const Additional_Scenes = [Axes_Viewer];
+const Additional_Scenes = [];
 
 export {
   Main_Scene,

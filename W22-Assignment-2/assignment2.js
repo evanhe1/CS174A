@@ -309,24 +309,12 @@ export class Assignment2 extends Base_Scene {
         model_transform,
         this.materials.plastic.override({ color })
       );
-    /*
-    model_transform = model_transform
-      .times(Mat4.translation(0, 1, 0))
-      .times(Mat4.rotation(-angle, 0, 0, 1))
-      .times(
-        Mat4.translation(
-          1 - Math.sin(angle + Math.PI / 2),
-          1 - Math.cos(angle + Math.PI / 2),
-          0
-        )
-      );
-    */
 
     model_transform = model_transform
       .times(Mat4.scale(1, 2 / 3, 1))
-      .times(Mat4.translation(1, 1.5, 0))
-      .times(Mat4.rotation(-angle, 0, 0, 1))
       .times(Mat4.translation(-1, 1.5, 0))
+      .times(Mat4.rotation(angle, 0, 0, 1))
+      .times(Mat4.translation(1, 1.5, 0))
       .times(Mat4.scale(1, 1.5, 1));
 
     return model_transform;
