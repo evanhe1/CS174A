@@ -220,7 +220,9 @@ export class Assignment3 extends Scene {
     const angle3x = (Math.PI / 12) * Math.sin(Math.PI * t);
     const planet_3 = (this.planet_3 = Mat4.identity()
       .times(Mat4.rotation(angle3y, 0, 1, 0))
-      .times(Mat4.translation(11, 0, 0)));
+      .times(Mat4.translation(11, 0, 0))
+      .times(Mat4.rotation(-Math.PI / 2, 0, 1, 0))
+      .times(Mat4.rotation(angle3x, 1, 0, 0)));
 
     this.shapes.planet3.draw(
       context,
@@ -229,10 +231,7 @@ export class Assignment3 extends Scene {
       this.materials.planet3_surface
     );
 
-    const rings = planet_3
-      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0))
-      .times(Mat4.rotation(angle3x, 1, 0, 0))
-      .times(Mat4.scale(3, 3, 3));
+    const rings = planet_3.times(Mat4.scale(3, 3, 3));
 
     this.shapes.torus2.draw(context, program_state, rings, this.materials.ring);
 
