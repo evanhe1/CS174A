@@ -217,12 +217,11 @@ export class Assignment3 extends Scene {
       );
 
     const angle3y = ((t % 20) / 20) * 2 * Math.PI;
-    const angle3x = (Math.PI / 12) * Math.sin(Math.PI * t);
+    const angle3x = (Math.PI / 3) * Math.sin((2 * Math.PI * t) / 6);
     const planet_3 = (this.planet_3 = Mat4.identity()
       .times(Mat4.rotation(angle3y, 0, 1, 0))
       .times(Mat4.translation(11, 0, 0))
-      .times(Mat4.rotation(-Math.PI / 2, 0, 1, 0))
-      .times(Mat4.rotation(angle3x, 1, 0, 0)));
+      .times(Mat4.rotation(angle3x, 1, 1, 1)));
 
     this.shapes.planet3.draw(
       context,
